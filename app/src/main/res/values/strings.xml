@@ -1,0 +1,57 @@
+<resources>
+    <string name="app_name">SmartPetCollar</string>
+    <string name="connection_status_disconnected">Disconnected</string>
+    <string name="connection_status_connected">Connected</string>
+    <string name="connection_status_connecting">Connecting...</string>
+    <string name="btn_connect">Connect</string>
+    <string name="btn_disconnect">Disconnect</string>
+    <string name="label_latitude">Latitude:</string>
+    <string name="label_longitude">Longitude:</string>
+    <string name="label_satellites">Satellites:</string>
+    <string name="section_received">Received Location Data</string>
+    <string name="btn_subscribe">Subscribe Location</string>
+    <string name="hint_location_waiting">Lat: --  Lon: --  Sat: --</string>
+    <string name="btn_clear_log">Clear Log</string>
+    <string name="hint_no_data">No data received yet...</string>
+
+    <!-- Location Test Activity -->
+    <string name="btn_location_test">Location Test</string>
+    <string name="location_test_title">Location Test</string>
+    <string name="btn_reconnect">Reconnect</string>
+    <string name="section_device_control">Device Control</string>
+    <string name="label_report_interval">Report Interval:</string>
+    <string name="label_seconds">s</string>
+    <string name="btn_screen_on">Screen ON</string>
+    <string name="btn_screen_off">Screen OFF</string>
+    <string name="section_realtime_location">Real-time Location</string>
+    <string name="label_loc_type">Type:</string>
+    <string name="label_last_update">Last update: %1$s</string>
+    <string name="label_last_update_none">No data received yet</string>
+    <string name="section_location_history">Location History</string>
+    <string name="fix_valid">Valid Fix</string>
+    <string name="fix_invalid">Invalid Fix</string>
+    <string name="fix_cell_approx">Approximate</string>
+    <string name="toast_invalid_interval">Invalid interval value</string>
+
+    <!-- BLE Image Transfer Activity -->
+    <string name="btn_ble_image">BLE Image Transfer</string>
+    <string name="ble_image_title">BLE Image Transfer</string>
+    <string name="ble_status_disconnected">BLE Disconnected</string>
+    <string name="ble_status_scanning">Scanning...</string>
+    <string name="ble_btn_scan">Scan Devices</string>
+    <string name="ble_btn_disconnect">Disconnect</string>
+    <string name="ble_btn_pick_image">Pick Image</string>
+    <string name="ble_image_preview">Image Preview</string>
+    <string name="ble_btn_send_image">Send Image</string>
+    <string name="ble_section_log">BLE Log</string>
+    <string name="ble_log_empty">No BLE activity yet...</string>
+
+    <!-- BLE Raw Image Transfer Activity -->
+    <string name="btn_ble_raw_image">BLE Raw Image Transfer</string>
+    <string name="ble_raw_image_title">Raw Image Transfer</string>
+    <string name="ble_raw_btn_pick_image">Pick Raw Image</string>
+    <string name="ble_raw_btn_send">Send Raw Image</string>
+    <string name="ble_raw_no_image">No image selected</string>
+    <string name="ble_raw_image_info">Image: %1$dx%2$d, Size: %3$d bytes</string>
+    <string name="ble_raw_image_info_no_decode">Image size: %1$d bytes</string>
+</resources>

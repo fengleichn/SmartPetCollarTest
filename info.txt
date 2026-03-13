@@ -1,0 +1,30 @@
+1.通信基于MQTT协议
+2.控制 数据(publish)	： 下行：v175/<MAC>/app（App → 设备，注意Retain=1）
+2.获取数据(subscribe)	：上行：v175/<MAC>/dev（设备 → App，Retain=0）
+3.注意：<MAC>  是设备唯一id名， 目前用mac地址代替，目前使用A0F262.
+4.对应topic 是  v175/A0F262/app      和   v175/A0F262/dev
+5.服务器地址和端口号在desion/address.png
+
+6.publish的数据格式是
+{
+  "id": "001",  // 每次id可不一样，可以在001-999循环， 可忽略
+  "act": "so",  //"so": 设置屏幕开启screen_on      "st": 关闭屏幕 stop
+  "dur": 30     //设置v175设备的通信间隔时间， 单位 秒
+}
+
+
+7.subscribe的数据格式是
+{
+  "type": "gnss",			//表示定位类型， gnss是 gps beidou定位。cell是基站模糊定位
+  "id": "001",			//通信id，可忽略 对应下行数据的 id, 
+  "act": "so",		//回传动作执行，对应下行数据的act  ->so:  屏幕开启screen_on  st:屏幕关  "dur": 30,		//设置v175设备的上报时间， 单位 秒
+  "data": {
+    "lat": 31.292130,
+    "lon": 121.125122,
+    "sat": 7
+  }
+}	
+定位模式。
+室外：gnss  定位精度 5-10m。 当sat>3  是有效定位，   开机需信号好的地方定位搜星
+室内： cell， 基站模糊定位， 50-500m， 与基站密度有关， 在无有效gnss定位情况下上传
+
