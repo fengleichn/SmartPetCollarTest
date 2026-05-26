@@ -3,6 +3,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <!-- BLE permissions -->
@@ -11,6 +13,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:maxSdkVersion="30" />
 
     <!-- Media permissions for image picking -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
@@ -28,7 +31,8 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -36,20 +40,14 @@
         </activity>
 
         <activity
-            android:name=".LocationTestActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".BleImageActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".BleRawImageActivity"
-            android:exported="false" />
-
-        <activity
             android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.SmartPetCollar.UCrop" />
+
+        <!-- AMap (Gaode) API key -->
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="6d8179e55669548b2633daee926d393a" />
 
     </application>
 </manifest>

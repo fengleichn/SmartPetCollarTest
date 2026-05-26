@@ -13,6 +13,9 @@ dependencyResolutionManagement {
         mavenCentral()
         maven { url "https://repo.eclipse.org/content/repositories/paho-snapshots/" }
         maven { url "https://jitpack.io" }
+        // AMap (Gaode) SDK - hosted on Aliyun public mirror (mainland-China friendly,
+        // mirrors the old jcenter content where AMap publishes its AARs).
+        maven { url "https://maven.aliyun.com/repository/public" }
     }
 }
 

@@ -1,4 +1,4 @@
-package com.visionox.smartpetcollar;
+package com.fenglei.smartpetcollar;
 
 public class LocationData {
 

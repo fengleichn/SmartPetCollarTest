@@ -1,13 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Legacy (kept for compatibility) -->
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="status_connected">#FF4CAF50</color>
-    <color name="status_disconnected">#FFF44336</color>
-    <color name="status_connecting">#FFFFC107</color>
     <color name="divider">#FFE0E0E0</color>
+
+    <!-- iOS-aligned status colors -->
+    <color name="status_connected">#FF34C759</color>      <!-- iOS systemGreen -->
+    <color name="status_disconnected">#FFFF3B30</color>   <!-- iOS systemRed -->
+    <color name="status_connecting">#FFFF9500</color>     <!-- iOS systemOrange -->
+    <color name="status_transferring">#FF007AFF</color>   <!-- iOS systemBlue -->
+
+    <!-- iOS system colors -->
+    <color name="ios_blue">#FF007AFF</color>              <!-- systemBlue / tint -->
+    <color name="ios_blue_pressed">#FF005FCC</color>
+    <color name="ios_label">#FF000000</color>             <!-- primary text -->
+    <color name="ios_secondary_label">#993C3C43</color>   <!-- secondary text (60% black) -->
+    <color name="ios_tertiary_label">#4C3C3C43</color>    <!-- tertiary text (30%) -->
+
+    <color name="ios_system_background">#FFFFFFFF</color>
+    <color name="ios_secondary_system_background">#FFF2F2F7</color>
+    <color name="ios_tertiary_system_background">#FFFFFFFF</color>
+    <color name="ios_grouped_background">#FFF2F2F7</color>
+
+    <color name="ios_separator">#4936363A</color>         <!-- ~29% black -->
+    <color name="ios_nav_bar">#FFF9F9F9</color>
+    <color name="ios_tab_bar">#FFF9F9F9</color>
+    <color name="ios_tab_unselected">#FF8E8E93</color>
 </resources>

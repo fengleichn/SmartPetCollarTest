@@ -1,0 +1,61 @@
+<resources>
+    <string name="app_name">智能宠物项圈</string>
+
+    <!-- 底部 Tab -->
+    <string name="tab_location">定位</string>
+    <string name="tab_ble_image">蓝牙图片</string>
+    <string name="tab_ble_raw">原图传输</string>
+
+    <!-- 导航栏标题 -->
+    <string name="title_location">定位监控</string>
+    <string name="title_ble_image">蓝牙图片（已裁剪）</string>
+    <string name="title_ble_raw">蓝牙原图</string>
+
+    <!-- ===== 定位页 ===== -->
+    <string name="connection_status_disconnected">未连接</string>
+    <string name="connection_status_connected">已连接</string>
+    <string name="connection_status_connecting">连接中…</string>
+    <string name="btn_connect">连接</string>
+    <string name="btn_disconnect">断开</string>
+    <string name="btn_screen_on">点亮屏幕</string>
+    <string name="btn_screen_off">熄灭屏幕</string>
+    <string name="last_message_label">最近消息：</string>
+    <string name="last_message_none">（无）</string>
+    <string name="no_location_data">暂无定位数据</string>
+    <string name="loc_lat_format">纬度：%1$.6f</string>
+    <string name="loc_lon_format">经度：%1$.6f</string>
+    <string name="loc_sat_fix_format">卫星数：%1$d ｜ 定位：%2$s</string>
+    <string name="fix_check">✓</string>
+    <string name="fix_cross">✗</string>
+    <string name="label_report_interval">上报间隔：</string>
+    <string name="label_seconds">秒</string>
+    <string name="toast_invalid_interval">间隔值无效</string>
+
+    <!-- ===== 蓝牙图片页 ===== -->
+    <string name="ble_idle">蓝牙空闲</string>
+    <string name="ble_scanning">扫描中…</string>
+    <string name="ble_connecting">连接中…</string>
+    <string name="ble_connected">已连接</string>
+    <string name="ble_transferring">传输中…</string>
+    <string name="ble_disconnected">已断开</string>
+    <string name="ble_btn_scan">扫描</string>
+    <string name="ble_btn_disconnect">断开</string>
+    <string name="ble_btn_pick">选择图片</string>
+    <string name="ble_btn_send">发送</string>
+    <string name="ble_btn_send_raw">发送原图</string>
+    <string name="ble_image_no_selection">未选择图片</string>
+    <string name="ble_image_ready">466×466 JPEG（可发送）</string>
+    <string name="ble_raw_size_format">原文件：%1$d 字节</string>
+    <string name="ble_image_preview">图片预览</string>
+    <string name="status_placeholder">--</string>
+
+    <!-- 日志 -->
+    <string name="btn_clear_log">清空日志</string>
+    <string name="hint_no_data">暂未收到数据…</string>
+    <string name="ble_log_empty">暂无蓝牙活动…</string>
+
+    <!-- 设备列表弹窗 -->
+    <string name="device_list_title">选择设备</string>
+    <string name="device_list_scanning">正在扫描前缀为 \"8G\" 的设备…</string>
+    <string name="device_list_cancel">取消</string>
+</resources>

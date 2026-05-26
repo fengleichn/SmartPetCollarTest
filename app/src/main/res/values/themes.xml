@@ -1,12 +1,78 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.SmartPetCollar" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+
+    <!-- Main app theme: iOS-like, no ActionBar, light grouped background -->
+    <style name="Theme.SmartPetCollar" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/ios_blue</item>
+        <item name="colorPrimaryVariant">@color/ios_blue_pressed</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">@color/ios_blue</item>
+        <item name="colorSecondaryVariant">@color/ios_blue_pressed</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <item name="android:colorBackground">@color/ios_grouped_background</item>
+        <item name="android:windowBackground">@color/ios_grouped_background</item>
+        <item name="android:statusBarColor">@color/ios_nav_bar</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:navigationBarColor">@color/ios_tab_bar</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+
+        <item name="android:textColorPrimary">@color/ios_label</item>
+        <item name="android:textColorSecondary">@color/ios_secondary_label</item>
+
+        <item name="materialButtonStyle">@style/Widget.SmartPetCollar.Button.Bordered</item>
     </style>
 
     <style name="Theme.SmartPetCollar.UCrop" parent="Theme.AppCompat.Light.NoActionBar" />
+
+    <!-- ===================== iOS-like Button styles ===================== -->
+
+    <!-- bordered: tinted background, blue text (default for non-primary actions) -->
+    <style name="Widget.SmartPetCollar.Button.Bordered" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="backgroundTint">#1A007AFF</item>
+        <item name="android:textColor">@color/ios_blue</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textSize">15sp</item>
+        <item name="cornerRadius">10dp</item>
+        <item name="rippleColor">#33007AFF</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:insetTop">2dp</item>
+        <item name="android:insetBottom">2dp</item>
+    </style>
+
+    <!-- borderedProminent: solid blue background, white text (for primary action) -->
+    <style name="Widget.SmartPetCollar.Button.Prominent" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="backgroundTint">@color/ios_blue</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textSize">15sp</item>
+        <item name="cornerRadius">10dp</item>
+        <item name="rippleColor">#33FFFFFF</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:insetTop">2dp</item>
+        <item name="android:insetBottom">2dp</item>
+    </style>
+
+    <!-- Plain text-style button -->
+    <style name="Widget.SmartPetCollar.Button.Plain" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/ios_blue</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <!-- ===================== iOS-like Nav Bar title ===================== -->
+    <style name="TextAppearance.SmartPetCollar.NavTitle" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textSize">17sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/ios_label</item>
+    </style>
+
+    <style name="TextAppearance.SmartPetCollar.Section" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/ios_secondary_label</item>
+        <item name="android:letterSpacing">0.05</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
 </resources>

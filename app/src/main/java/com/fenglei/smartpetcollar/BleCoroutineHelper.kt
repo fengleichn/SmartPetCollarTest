@@ -1,4 +1,4 @@
-package com.visionox.smartpetcollar
+package com.fenglei.smartpetcollar
 
 import android.bluetooth.BluetoothDevice
 import com.visionox.ble.domain.protocol.BLEDeviceProfile

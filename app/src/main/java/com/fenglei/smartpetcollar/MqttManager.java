@@ -1,4 +1,4 @@
-package com.visionox.smartpetcollar;
+package com.fenglei.smartpetcollar;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -18,15 +18,25 @@ public class MqttManager {
 
     private static final String TAG = "MqttManager";
     private static final String BROKER_URL = "tcp://47.100.220.100:1883";
-    private static final String DEVICE_MAC = "E006F4";
-    private static final String TOPIC_PUBLISH = "v175/" + DEVICE_MAC + "/app";
-    private static final String TOPIC_SUBSCRIBE = "v175/" + DEVICE_MAC + "/dev";
     private static final String CLIENT_ID_PREFIX = "SmartPetCollar_";
+
+    /** Preset list of device MACs the user can switch between via the Location-page gear menu.
+     *  Add or remove entries here as collars are introduced. */
+    public static final String[] PRESET_DEVICE_MACS = new String[] {
+            "E0CA9C",
+            "E0CA94",
+            "E00700",
+            "E006F8",
+            "E006F0"
+    };
+    public static final String DEFAULT_DEVICE_MAC = PRESET_DEVICE_MACS[0];
 
     private MqttAsyncClient mqttClient;
     private MqttCallback callback;
     private final Gson gson = new Gson();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
+
+    private String deviceMac = DEFAULT_DEVICE_MAC;
 
     public interface MqttCallback {
         void onConnected();
@@ -37,6 +47,51 @@ public class MqttManager {
         void onPublishFailed(String error);
         void onSubscribeSuccess();
         void onSubscribeFailed(String error);
+    }
+
+    public String getDeviceMac() {
+        return deviceMac;
+    }
+
+    private String topicPublish() {
+        return "v175/" + deviceMac + "/app";
+    }
+
+    private String topicSubscribe() {
+        return "v175/" + deviceMac + "/dev";
+    }
+
+    /**
+     * Switch the active device MAC. Topics are recomputed automatically the next time
+     * connect/subscribe/publish is invoked. If the client is currently connected, the caller
+     * is expected to disconnect+reconnect (see {@link #switchDeviceAndReconnect}) so the
+     * new device's topics actually take effect.
+     */
+    public void setDeviceMac(String mac) {
+        if (mac == null || mac.isEmpty()) return;
+        this.deviceMac = mac;
+    }
+
+    /**
+     * Convenience: change MAC and, if currently connected, transparently disconnect →
+     * reconnect → re-subscribe to the new device's topic. The caller's MqttCallback keeps
+     * receiving the same onConnected/onSubscribeSuccess events under the new MAC.
+     */
+    public void switchDeviceAndReconnect(String mac) {
+        if (mac == null || mac.isEmpty() || mac.equals(deviceMac)) return;
+        boolean wasConnected = isConnected();
+        MqttCallback prevCallback = this.callback;
+        if (wasConnected) {
+            try {
+                mqttClient.disconnect();
+            } catch (MqttException ignored) {
+            }
+        }
+        this.deviceMac = mac;
+        if (wasConnected && prevCallback != null) {
+            // Reconnect on the next event-loop tick so the disconnect callback (if any) settles first.
+            mainHandler.post(() -> connect(prevCallback));
+        }
     }
 
     public void connect(MqttCallback callback) {
@@ -58,7 +113,7 @@ public class MqttManager {
         mqttClient.setCallback(new MqttCallbackExtended() {
             @Override
             public void connectComplete(boolean reconnect, String serverURI) {
-                Log.d(TAG, "Connected to: " + serverURI + " (reconnect=" + reconnect + ")");
+                Log.d(TAG, "Connected to: " + serverURI + " (reconnect=" + reconnect + ", mac=" + deviceMac + ")");
                 mainHandler.post(() -> {
                     if (MqttManager.this.callback != null) {
                         MqttManager.this.callback.onConnected();
@@ -136,17 +191,18 @@ public class MqttManager {
             });
             return;
         }
-        Log.d(TAG, "Subscribing to topic: " + TOPIC_PUBLISH + " with QoS=1 (read retained location)");
+        String topic = topicPublish();
+        Log.d(TAG, "Subscribing to topic: " + topic + " with QoS=1 (read retained location)");
         try {
-            mqttClient.subscribe(TOPIC_PUBLISH, 1);
-            Log.d(TAG, "Subscribe request sent successfully, topic: " + TOPIC_PUBLISH);
+            mqttClient.subscribe(topic, 1);
+            Log.d(TAG, "Subscribe request sent successfully, topic: " + topic);
             mainHandler.post(() -> {
                 if (callback != null) {
                     callback.onSubscribeSuccess();
                 }
             });
         } catch (MqttException e) {
-            Log.e(TAG, "Subscribe failed for topic: " + TOPIC_PUBLISH + ", error: " + e.getMessage(), e);
+            Log.e(TAG, "Subscribe failed for topic: " + topic + ", error: " + e.getMessage(), e);
             mainHandler.post(() -> {
                 if (callback != null) {
                     callback.onSubscribeFailed(e.getMessage());
@@ -164,17 +220,18 @@ public class MqttManager {
             });
             return;
         }
-        Log.d(TAG, "Subscribing to device topic: " + TOPIC_SUBSCRIBE + " with QoS=1");
+        String topic = topicSubscribe();
+        Log.d(TAG, "Subscribing to device topic: " + topic + " with QoS=1");
         try {
-            mqttClient.subscribe(TOPIC_SUBSCRIBE, 1);
-            Log.d(TAG, "Subscribe request sent successfully, topic: " + TOPIC_SUBSCRIBE);
+            mqttClient.subscribe(topic, 1);
+            Log.d(TAG, "Subscribe request sent successfully, topic: " + topic);
             mainHandler.post(() -> {
                 if (callback != null) {
                     callback.onSubscribeSuccess();
                 }
             });
         } catch (MqttException e) {
-            Log.e(TAG, "Subscribe failed for topic: " + TOPIC_SUBSCRIBE + ", error: " + e.getMessage(), e);
+            Log.e(TAG, "Subscribe failed for topic: " + topic + ", error: " + e.getMessage(), e);
             mainHandler.post(() -> {
                 if (callback != null) {
                     callback.onSubscribeFailed(e.getMessage());
@@ -195,13 +252,14 @@ public class MqttManager {
 
         String id = String.format("%03d", (int) (Math.random() * 999) + 1);
         String json = "{\"id\":\"" + id + "\",\"act\":\"" + act + "\",\"dur\":" + dur + "}";
-        Log.d(TAG, "Publishing command to " + TOPIC_PUBLISH + ": " + json);
+        String topic = topicPublish();
+        Log.d(TAG, "Publishing command to " + topic + ": " + json);
 
         try {
             MqttMessage message = new MqttMessage(json.getBytes());
             message.setQos(1);
             message.setRetained(true);
-            mqttClient.publish(TOPIC_PUBLISH, message);
+            mqttClient.publish(topic, message);
             Log.d(TAG, "Command publish initiated");
             mainHandler.post(() -> {
                 if (callback != null) {

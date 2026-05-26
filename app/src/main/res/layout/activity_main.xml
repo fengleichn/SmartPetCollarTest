@@ -1,146 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:background="@color/ios_grouped_background">
 
-    <!-- Navigate to Location Test -->
-    <Button
-        android:id="@+id/btnLocationTest"
-        style="@style/Widget.MaterialComponents.Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="@string/btn_location_test" />
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Navigate to BLE Image Transfer -->
-    <Button
-        android:id="@+id/btnBleImage"
-        style="@style/Widget.MaterialComponents.Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="@string/btn_ble_image" />
-
-    <!-- Navigate to BLE Raw Image Transfer -->
-    <Button
-        android:id="@+id/btnBleRawImage"
-        style="@style/Widget.MaterialComponents.Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="@string/btn_ble_raw_image" />
-
-    <!-- Connection Status Section -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <View
-            android:id="@+id/statusIndicator"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:background="@color/status_disconnected" />
-
-        <TextView
-            android:id="@+id/tvConnectionStatus"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:text="@string/connection_status_disconnected"
-            android:textSize="14sp" />
-
-        <Button
-            android:id="@+id/btnConnect"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_connect"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/btnDisconnect"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:enabled="false"
-            android:text="@string/btn_disconnect"
-            android:textSize="12sp" />
-    </LinearLayout>
-
-    <!-- Divider -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
-        android:background="@color/divider" />
+        android:layout_height="0.5dp"
+        android:background="@color/ios_separator"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNav" />
 
-    <!-- Subscribe Button -->
-    <Button
-        android:id="@+id/btnSubscribe"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:enabled="false"
-        android:text="@string/btn_subscribe" />
+        android:background="@color/ios_tab_bar"
+        app:itemIconTint="@color/bottom_nav_item_color"
+        app:itemTextColor="@color/bottom_nav_item_color"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/bottom_nav" />
 
-    <!-- Subscribed Location Display -->
-    <TextView
-        android:id="@+id/tvSubscribedLocation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:fontFamily="monospace"
-        android:text="@string/hint_location_waiting"
-        android:textColor="#FF555555"
-        android:textSize="14sp" />
-
-    <!-- Divider -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
-        android:background="@color/divider" />
-
-    <!-- Received Data Section Header -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="@string/section_received"
-        android:textSize="16sp"
-        android:textStyle="bold" />
-
-    <!-- Received Data Log -->
-    <ScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:background="#FFF5F5F5"
-        android:padding="8dp">
-
-        <TextView
-            android:id="@+id/tvReceivedData"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="monospace"
-            android:text="@string/hint_no_data"
-            android:textSize="11sp" />
-    </ScrollView>
-
-    <!-- Clear Log Button -->
-    <Button
-        android:id="@+id/btnClearLog"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="@string/btn_clear_log" />
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

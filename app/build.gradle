@@ -6,19 +6,29 @@ plugins {
 }
 
 android {
-    namespace 'com.visionox.smartpetcollar'
+    namespace 'com.fenglei.smartpetcollar'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.visionox.smartpetcollar"
+        applicationId "com.fenglei.smartpetcollar"
         minSdk 24
         targetSdk 34
         versionCode 1
         versionName "1.0"
     }
 
+    signingConfigs {
+        release {
+            storeFile file('../keystore/release.keystore')
+            storePassword 'android'
+            keyAlias 'smartpetcollar'
+            keyPassword 'android'
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -63,4 +73,7 @@ dependencies {
 
     // UCrop (image cropping)
     implementation 'com.github.yalantis:ucrop:2.2.9'
+
+    // AMap (Gaode) 3D map SDK - mainland-China-friendly map provider
+    implementation 'com.amap.api:3dmap:10.0.600'
 }
