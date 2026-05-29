@@ -54,6 +54,9 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.6.2'
 
     // MQTT - Eclipse Paho (pure Java client, no Android service dependency)
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5'
@@ -76,4 +79,8 @@ dependencies {
 
     // AMap (Gaode) 3D map SDK - mainland-China-friendly map provider
     implementation 'com.amap.api:3dmap:10.0.600'
+
+    // DataStore - persistent key-value storage
+    implementation 'androidx.datastore:datastore-preferences:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.2'
 }

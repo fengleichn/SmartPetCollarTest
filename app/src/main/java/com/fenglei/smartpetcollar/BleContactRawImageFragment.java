@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,31 +23,24 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
-import com.visionox.ble.data.repository.BLERepositoryImpl;
 import com.visionox.ble.domain.repository.BLERepository;
-import com.visionox.ble.infrastructure.factory.DefaultBLEFileTransferProtocolFactory;
-import com.visionox.ble.infrastructure.protocol.DefaultBLEDeviceProfile;
-import com.visionox.ble.infrastructure.scanner.BLEScanner;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 /**
- * BleRawImageFragment - mirrors iOS BLERawImageView.
- *
- * Sends an image as-is (no crop, no resize) over BLE to /sdcard/user/1.jpg.
+ * BleContactRawImageFragment - Contact sub-tab. Sends an image as-is
+ * over BLE to /sdcard/user/1.jpg, sharing the BLE session owned by
+ * the parent ImageContainerFragment (BleSessionViewModel).
  */
-public class BleRawImageFragment extends Fragment {
+public class BleContactRawImageFragment extends Fragment {
 
-    private static final int REQUEST_BLE_PERMISSIONS = 200;
     private static final int REQUEST_STORAGE_PERMISSIONS = 201;
     private static final String TRANSFER_FILE_NAME = "/sdcard/user/1.jpg";
 
-    private View statusDot;
-    private TextView tvBleStatus;
-    private MaterialButton btnScan;
     private MaterialButton btnPickImage;
     private MaterialButton btnSendImage;
     private View imagePlaceholder;
@@ -57,9 +49,8 @@ public class BleRawImageFragment extends Fragment {
     private ProgressBar progressBar;
     private TextView tvStatusMessage;
 
-    private BLERepository bleRepository;
+    private BleSessionViewModel vm;
     private byte[] selectedImageBytes;
-    private boolean bleConnected = false;
 
     private final ActivityResultLauncher<PickVisualMediaRequest> pickMediaLauncher =
             registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
@@ -84,9 +75,8 @@ public class BleRawImageFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        statusDot = view.findViewById(R.id.statusDot);
-        tvBleStatus = view.findViewById(R.id.tvBleStatus);
-        btnScan = view.findViewById(R.id.btnScan);
+        vm = new ViewModelProvider(requireParentFragment()).get(BleSessionViewModel.class);
+
         btnPickImage = view.findViewById(R.id.btnPickImage);
         btnSendImage = view.findViewById(R.id.btnSendImage);
         imagePlaceholder = view.findViewById(R.id.imagePlaceholder);
@@ -95,36 +85,12 @@ public class BleRawImageFragment extends Fragment {
         progressBar = view.findViewById(R.id.progressBar);
         tvStatusMessage = view.findViewById(R.id.tvStatusMessage);
 
-        initBle();
-
-        btnScan.setOnClickListener(v -> {
-            if (bleConnected) {
-                bleRepository.disconnect();
-                updateBleState(R.string.ble_disconnected, R.color.status_disconnected, false);
-                setStatusMessage("Disconnected");
-            } else if (checkAndRequestBlePermissions()) {
-                startScan();
-            }
-        });
-
         btnPickImage.setOnClickListener(v -> {
             if (checkAndRequestStoragePermissions()) pickImage();
         });
         btnSendImage.setOnClickListener(v -> sendImage());
 
-        updateBleState(R.string.ble_idle, R.color.status_disconnected, false);
-    }
-
-    private void initBle() {
-        BLEScanner scanner = new BLEScanner(requireContext().getApplicationContext());
-        DefaultBLEFileTransferProtocolFactory factory =
-                new DefaultBLEFileTransferProtocolFactory(requireContext().getApplicationContext());
-        bleRepository = new BLERepositoryImpl(
-                requireContext().getApplicationContext(),
-                scanner,
-                factory,
-                DefaultBLEDeviceProfile.INSTANCE
-        );
+        vm.getConnState().observe(getViewLifecycleOwner(), state -> updateSendButtonEnabled());
     }
 
     // ===== Pick =====
@@ -167,64 +133,33 @@ public class BleRawImageFragment extends Fragment {
                 tvImageMeta.setText(getString(R.string.ble_raw_size_format, selectedImageBytes.length));
                 setStatusMessage("Image selected: " + selectedImageBytes.length + " bytes (cannot decode)");
             }
-            btnSendImage.setEnabled(bleConnected);
+            updateSendButtonEnabled();
         } catch (Exception e) {
             setStatusMessage("Error reading image: " + e.getMessage());
         }
     }
 
-    // ===== Scan / Send =====
-
-    private void startScan() {
-        setStatusMessage("Scanning for BLE devices...");
-        updateBleState(R.string.ble_scanning, R.color.status_connecting, false);
-        btnScan.setEnabled(false);
-
-        BleCoroutineHelper.scanAndConnect(
-                bleRepository,
-                DefaultBLEDeviceProfile.INSTANCE,
-                new BleCoroutineHelper.ScanCallback() {
-                    @Override
-                    public void onSuccess(@NonNull android.bluetooth.BluetoothDevice device) {
-                        runOnUi(() -> {
-                            updateBleState(R.string.ble_connected, R.color.status_connected, true);
-                            btnScan.setEnabled(true);
-                            btnSendImage.setEnabled(selectedImageBytes != null);
-                            setStatusMessage("Connected: " + device.getAddress());
-                        });
-                    }
-
-                    @Override
-                    public void onError(@NonNull String error) {
-                        runOnUi(() -> {
-                            updateBleState(R.string.ble_disconnected, R.color.status_disconnected, false);
-                            btnScan.setEnabled(true);
-                            setStatusMessage("Scan/Connect failed: " + error);
-                        });
-                    }
-                }
-        );
-    }
+    // ===== Send =====
 
     private void sendImage() {
         if (selectedImageBytes == null) {
             Toast.makeText(requireContext(), "Please select an image first", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (!bleRepository.isConnected()) {
+        if (!vm.isConnected()) {
             Toast.makeText(requireContext(), "Please connect to a BLE device first", Toast.LENGTH_SHORT).show();
             return;
         }
-        setStatusMessage("Sending raw image: " + TRANSFER_FILE_NAME + " (" + selectedImageBytes.length + " bytes)");
+        BLERepository ble = vm.getBleRepository();
+        vm.markTransferStart("Sending raw image: " + TRANSFER_FILE_NAME
+                + " (" + selectedImageBytes.length + " bytes)");
         progressBar.setVisibility(View.VISIBLE);
         progressBar.setProgress(0);
-        btnSendImage.setEnabled(false);
-        updateBleState(R.string.ble_transferring, R.color.status_transferring, true);
 
-        startProgressObserver();
+        startProgressObserver(ble);
 
         BleCoroutineHelper.sendData(
-                bleRepository,
+                ble,
                 selectedImageBytes,
                 TRANSFER_FILE_NAME,
                 new BleCoroutineHelper.SendCallback() {
@@ -232,30 +167,33 @@ public class BleRawImageFragment extends Fragment {
                     public void onSuccess() {
                         runOnUi(() -> {
                             progressBar.setProgress(100);
-                            setStatusMessage("Raw image sent successfully!");
-                            btnSendImage.setEnabled(true);
-                            updateBleState(R.string.ble_connected, R.color.status_connected, true);
+                            vm.markTransferEnd("Raw image sent successfully!");
                         });
                     }
 
                     @Override
                     public void onError(@NonNull String error) {
                         runOnUi(() -> {
-                            setStatusMessage("Send failed: " + error);
-                            btnSendImage.setEnabled(true);
                             progressBar.setVisibility(View.GONE);
-                            updateBleState(R.string.ble_connected, R.color.status_connected, true);
+                            vm.markTransferEnd("Send failed: " + error);
                         });
                     }
                 }
         );
     }
 
-    private void startProgressObserver() {
+    private void updateSendButtonEnabled() {
+        if (!isAdded()) return;
+        boolean canSend = selectedImageBytes != null && vm != null
+                && vm.getConnState().getValue() == BleSessionViewModel.ConnState.CONNECTED;
+        btnSendImage.setEnabled(canSend);
+    }
+
+    private void startProgressObserver(BLERepository ble) {
         Thread t = new Thread(() -> {
             int lastProgress = -1;
             while (true) {
-                int progress = bleRepository.getTransferProgress().getValue();
+                int progress = ble.getTransferProgress().getValue();
                 if (progress != lastProgress) {
                     lastProgress = progress;
                     int p = progress;
@@ -269,32 +207,7 @@ public class BleRawImageFragment extends Fragment {
         t.start();
     }
 
-    // ===== Permissions =====
-
-    private boolean checkAndRequestBlePermissions() {
-        java.util.List<String> needed = new java.util.ArrayList<>();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_SCAN)
-                    != PackageManager.PERMISSION_GRANTED) {
-                needed.add(Manifest.permission.BLUETOOTH_SCAN);
-            }
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_CONNECT)
-                    != PackageManager.PERMISSION_GRANTED) {
-                needed.add(Manifest.permission.BLUETOOTH_CONNECT);
-            }
-        } else {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-                needed.add(Manifest.permission.ACCESS_FINE_LOCATION);
-            }
-        }
-        if (!needed.isEmpty()) {
-            ActivityCompat.requestPermissions(requireActivity(), needed.toArray(new String[0]),
-                    REQUEST_BLE_PERMISSIONS);
-            return false;
-        }
-        return true;
-    }
+    // ===== Storage permission =====
 
     private boolean checkAndRequestStoragePermissions() {
         if (Build.VERSION.SDK_INT >= 33) {
@@ -318,33 +231,9 @@ public class BleRawImageFragment extends Fragment {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_BLE_PERMISSIONS) {
-            boolean all = grantResults.length > 0;
-            for (int r : grantResults) if (r != PackageManager.PERMISSION_GRANTED) { all = false; break; }
-            if (all) startScan();
-            else setStatusMessage("BLE permissions denied");
-        } else if (requestCode == REQUEST_STORAGE_PERMISSIONS) {
+        if (requestCode == REQUEST_STORAGE_PERMISSIONS) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) pickImage();
             else setStatusMessage("Storage permission denied");
-        }
-    }
-
-    // ===== UI helpers =====
-
-    private void updateBleState(int textRes, int colorRes, boolean connected) {
-        if (!isAdded()) return;
-        bleConnected = connected;
-        tvBleStatus.setText(textRes);
-        setDotColor(statusDot, ContextCompat.getColor(requireContext(), colorRes));
-        btnScan.setText(connected ? R.string.ble_btn_disconnect : R.string.ble_btn_scan);
-        btnSendImage.setEnabled(connected && selectedImageBytes != null);
-    }
-
-    private void setDotColor(View dot, int color) {
-        if (dot.getBackground() instanceof GradientDrawable) {
-            ((GradientDrawable) dot.getBackground().mutate()).setColor(color);
-        } else {
-            dot.setBackgroundColor(color);
         }
     }
 
@@ -357,11 +246,5 @@ public class BleRawImageFragment extends Fragment {
         if (isAdded() && getActivity() != null) {
             requireActivity().runOnUiThread(r);
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (bleRepository != null) bleRepository.disconnect();
     }
 }

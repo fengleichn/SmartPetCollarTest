@@ -1,185 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/ios_grouped_background"
-    android:orientation="vertical">
+    android:fillViewport="true">
 
-    <!-- ===== Nav bar ===== -->
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:background="@color/ios_nav_bar">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/title_ble_raw"
-            android:textAppearance="@style/TextAppearance.SmartPetCollar.NavTitle" />
-        <View
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- ===== Image preview card ===== -->
+        <FrameLayout
+            android:id="@+id/imageContainer"
             android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:layout_gravity="bottom"
-            android:background="@color/ios_separator" />
-    </FrameLayout>
+            android:layout_height="200dp"
+            android:background="@drawable/bg_image_placeholder">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <!-- ===== BLE status card ===== -->
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/imagePlaceholder"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_card"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="12dp">
-
-                <View
-                    android:id="@+id/statusDot"
-                    android:layout_width="10dp"
-                    android:layout_height="10dp"
-                    android:background="@drawable/bg_status_dot" />
-
-                <TextView
-                    android:id="@+id/tvBleStatus"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:text="@string/ble_idle"
-                    android:textColor="@color/ios_label"
-                    android:textSize="14sp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnScan"
-                    style="@style/Widget.SmartPetCollar.Button.Bordered"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/ble_btn_scan"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <!-- ===== Image card ===== -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:gravity="center_horizontal"
+                android:layout_gravity="center"
+                android:gravity="center"
                 android:orientation="vertical">
 
-                <FrameLayout
-                    android:id="@+id/imageContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="250dp"
-                    android:background="@drawable/bg_image_placeholder">
-
-                    <LinearLayout
-                        android:id="@+id/imagePlaceholder"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <ImageView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:src="@drawable/ic_tab_doc"
-                            app:tint="@color/ios_secondary_label"
-                            tools:ignore="ContentDescription" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="@string/ble_image_no_selection"
-                            android:textColor="@color/ios_secondary_label"
-                            android:textSize="13sp" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/ivPreview"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="fitCenter"
-                        android:visibility="gone"
-                        tools:ignore="ContentDescription" />
-                </FrameLayout>
+                <ImageView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:src="@drawable/ic_tab_image"
+                    app:tint="@color/ios_tertiary_label"
+                    tools:ignore="ContentDescription" />
 
                 <TextView
-                    android:id="@+id/tvImageMeta"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textColor="@color/ios_secondary_label"
-                    android:textSize="12sp"
-                    android:visibility="gone" />
+                    android:layout_marginTop="6dp"
+                    android:text="@string/ble_image_no_selection"
+                    android:textColor="@color/ios_tertiary_label"
+                    android:textSize="13sp" />
             </LinearLayout>
 
-            <!-- ===== Action buttons ===== -->
-            <LinearLayout
+            <ImageView
+                android:id="@+id/ivPreview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:visibility="gone"
+                tools:ignore="ContentDescription" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvImageMeta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textColor="@color/ios_secondary_label"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <!-- ===== Row 1: 选择图片 — solid blue, full width ===== -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPickImage"
+            style="@style/Widget.SmartPetCollar.Button.Prominent"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="@string/ble_btn_pick"
+            android:textSize="15sp" />
+
+        <!-- ===== Row 2: 原图发送 — full width, Bordered ===== -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSendImage"
+            style="@style/Widget.SmartPetCollar.Button.Bordered"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="8dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:enabled="false"
+            android:text="@string/ble_btn_send_raw"
+            android:textSize="14sp" />
+
+        <!-- ===== Progress / log card (expands to fill remaining space) ===== -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
+                android:max="100"
+                android:progress="0"
+                android:visibility="gone" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnPickImage"
-                    style="@style/Widget.SmartPetCollar.Button.Bordered"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/ble_btn_pick" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSendImage"
-                    style="@style/Widget.SmartPetCollar.Button.Prominent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:enabled="false"
-                    android:text="@string/ble_btn_send_raw" />
-            </LinearLayout>
-
-            <!-- ===== Progress card ===== -->
-            <LinearLayout
+            <TextView
+                android:id="@+id/tvStatusMessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_card"
-                android:orientation="vertical"
-                android:padding="12dp">
-
-                <ProgressBar
-                    android:id="@+id/progressBar"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:max="100"
-                    android:progress="0"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/tvStatusMessage"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/ble_log_empty"
-                    android:textColor="@color/ios_secondary_label"
-                    android:textSize="12sp" />
-            </LinearLayout>
+                android:layout_marginTop="4dp"
+                android:text="@string/ble_log_empty"
+                android:textColor="@color/ios_secondary_label"
+                android:textSize="12sp" />
         </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

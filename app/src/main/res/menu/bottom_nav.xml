@@ -8,8 +8,4 @@
         android:id="@+id/nav_ble_image"
         android:icon="@drawable/ic_tab_image"
         android:title="@string/tab_ble_image" />
-    <item
-        android:id="@+id/nav_ble_raw"
-        android:icon="@drawable/ic_tab_doc"
-        android:title="@string/tab_ble_raw" />
 </menu>

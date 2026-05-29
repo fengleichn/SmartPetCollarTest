@@ -1,15 +1,16 @@
 <resources>
     <string name="app_name">SmartPetCollar</string>
 
-    <!-- Bottom navigation tabs (mirrors iOS TabView) -->
+    <!-- Bottom navigation tabs -->
     <string name="tab_location">Location</string>
-    <string name="tab_ble_image">BLE Image</string>
-    <string name="tab_ble_raw">Raw Image</string>
+    <string name="tab_ble_image">Image</string>
+
+    <!-- Image sub-tabs (inside the Image tab) -->
+    <string name="image_subtab_pet">Pet</string>
+    <string name="image_subtab_contact">Find Pet</string>
 
     <!-- Nav bar titles (mirrors iOS navigationTitle) -->
     <string name="title_location">Location Monitor</string>
-    <string name="title_ble_image">BLE Image (Cropped)</string>
-    <string name="title_ble_raw">BLE Raw Image</string>
 
     <!-- ===== Location page (mirrors iOS LocationView) ===== -->
     <string name="connection_status_disconnected">Disconnected</string>
@@ -17,7 +18,7 @@
     <string name="connection_status_connecting">Connecting...</string>
     <string name="btn_connect">Connect</string>
     <string name="btn_disconnect">Disconnect</string>
-    <string name="btn_screen_on">Screen On</string>
+    <string name="btn_screen_on">Screen Always On</string>
     <string name="btn_screen_off">Screen Off</string>
     <string name="last_message_label">Last Message:</string>
     <string name="last_message_none">(none)</string>
@@ -25,6 +26,8 @@
     <string name="loc_lat_format">Lat: %1$.6f</string>
     <string name="loc_lon_format">Lon: %1$.6f</string>
     <string name="loc_sat_fix_format">Satellites: %1$d | Fix: %2$s</string>
+    <string name="loc_gnss_format">GPS定位 | 卫星数: %1$d | %2$s</string>
+    <string name="loc_type_cell">基站定位</string>
     <string name="fix_check">✓</string>
     <string name="fix_cross">✗</string>
     <string name="label_report_interval">Report Interval:</string>
@@ -42,6 +45,7 @@
     <string name="ble_btn_disconnect">Disconnect</string>
     <string name="ble_btn_pick">Pick Image</string>
     <string name="ble_btn_send">Send</string>
+    <string name="ble_btn_crop_send">Crop &amp; Send</string>
     <string name="ble_btn_send_raw">Send Raw</string>
     <string name="ble_image_no_selection">No image selected</string>
     <string name="ble_image_ready">466×466 JPEG (ready to send)</string>

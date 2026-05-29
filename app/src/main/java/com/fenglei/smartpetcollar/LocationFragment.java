@@ -53,9 +53,14 @@ public class LocationFragment extends Fragment implements MqttManager.MqttCallba
     private boolean firstFix = true;
 
     private MqttManager mqttManager;
+    private DevicePreferences devicePreferences;
     private boolean isConnected = false;
 
-    private static final int DEFAULT_INTERVAL_SEC = 30;
+    // Tracks which screen command was last sent (null = none sent yet)
+    private enum ScreenState { NONE, ON, OFF }
+    private ScreenState screenState = ScreenState.NONE;
+
+    private static final int DEFAULT_INTERVAL_SEC = 10;
     private static final float MARKER_ZOOM = 16f;
 
     @Nullable
@@ -87,6 +92,9 @@ public class LocationFragment extends Fragment implements MqttManager.MqttCallba
         aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(39.9042, 116.4074), 10f));
 
         mqttManager = new MqttManager();
+        devicePreferences = DevicePreferences.getInstance(requireContext());
+        devicePreferences.getSelectedMac().observe(getViewLifecycleOwner(), mac ->
+                mqttManager.setDeviceMac(mac));
 
         btnConnect.setOnClickListener(v -> {
             if (isConnected) {
@@ -101,16 +109,18 @@ public class LocationFragment extends Fragment implements MqttManager.MqttCallba
         btnScreenOn.setOnClickListener(v -> {
             mqttManager.publishCommand("so", DEFAULT_INTERVAL_SEC);
             appendLastMessage("[CMD] Screen ON sent (interval " + DEFAULT_INTERVAL_SEC + "s)");
+            setScreenState(ScreenState.ON);
         });
         btnScreenOff.setOnClickListener(v -> {
             mqttManager.publishCommand("st", DEFAULT_INTERVAL_SEC);
             appendLastMessage("[CMD] Screen OFF sent");
+            setScreenState(ScreenState.OFF);
         });
 
         btnSettings.setOnClickListener(v -> showDeviceSwitcherDialog());
 
         updateConnectionUI(getString(R.string.connection_status_disconnected),
-                R.color.status_disconnected, false);
+                R.color.status_idle, false);
     }
 
     /**
@@ -135,6 +145,7 @@ public class LocationFragment extends Fragment implements MqttManager.MqttCallba
                 .setSingleChoiceItems(macs, checkedIndex, (dialog, which) -> {
                     String selected = macs[which];
                     if (!selected.equals(mqttManager.getDeviceMac())) {
+                        devicePreferences.saveSelectedMac(selected);
                         mqttManager.switchDeviceAndReconnect(selected);
                         appendLastMessage(getString(R.string.device_switch_toast_format, selected));
                         Toast.makeText(requireContext(),
@@ -182,14 +193,45 @@ public class LocationFragment extends Fragment implements MqttManager.MqttCallba
 
     // ===== UI helpers =====
 
+    private void setScreenState(ScreenState state) {
+        if (!isAdded()) return;
+        screenState = state;
+        applyScreenButtonStyles();
+    }
+
+    private void applyScreenButtonStyles() {
+        setButtonStyle(btnScreenOn, screenState == ScreenState.ON);
+        setButtonStyle(btnScreenOff, screenState == ScreenState.OFF);
+    }
+
+    private void setButtonStyle(com.google.android.material.button.MaterialButton btn, boolean active) {
+        if (active) {
+            btn.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                    getResources().getColor(R.color.ios_blue, null)));
+            btn.setTextColor(getResources().getColor(android.R.color.white, null));
+        } else {
+            btn.setBackgroundTintList(android.content.res.ColorStateList.valueOf(0x1A007AFF));
+            btn.setTextColor(getResources().getColor(R.color.ios_blue, null));
+        }
+    }
+
     private void updateConnectionUI(String text, int colorRes, boolean connected) {
         if (!isAdded()) return;
         isConnected = connected;
         tvConnectionStatus.setText(text);
         setDotColor(statusDot, ContextCompat.getColor(requireContext(), colorRes));
         btnConnect.setText(connected ? R.string.btn_disconnect : R.string.btn_connect);
+        btnConnect.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                connected ? 0x1A007AFF : getResources().getColor(R.color.ios_blue, null)));
+        btnConnect.setTextColor(connected
+                ? getResources().getColor(R.color.ios_blue, null)
+                : getResources().getColor(android.R.color.white, null));
         btnScreenOn.setEnabled(connected);
         btnScreenOff.setEnabled(connected);
+        if (!connected) {
+            screenState = ScreenState.NONE;
+            applyScreenButtonStyles();
+        }
     }
 
     private void setDotColor(View dot, int color) {
@@ -237,28 +279,28 @@ public class LocationFragment extends Fragment implements MqttManager.MqttCallba
 
     @Override
     public void onConnected() {
+        if (!isAdded()) return;
         updateConnectionUI(getString(R.string.connection_status_connected),
                 R.color.status_connected, true);
         appendLastMessage("Connected to MQTT broker");
-        // Auto-subscribe so location data can flow in immediately (mirrors iOS connect flow).
         mqttManager.subscribeDeviceTopic();
     }
 
     @Override
     public void onDisconnected() {
+        if (!isAdded()) return;
         updateConnectionUI(getString(R.string.connection_status_disconnected),
-                R.color.status_disconnected, false);
+                R.color.status_idle, false);
         appendLastMessage("Disconnected");
     }
 
     @Override
     public void onConnectionFailed(String error) {
+        if (!isAdded()) return;
         updateConnectionUI(getString(R.string.connection_status_disconnected),
-                R.color.status_disconnected, false);
+                R.color.status_disconnected, false);  // red dot: active failure
         appendLastMessage("Connection failed: " + error);
-        if (isAdded()) {
-            Toast.makeText(requireContext(), "Connection failed: " + error, Toast.LENGTH_LONG).show();
-        }
+        Toast.makeText(requireContext(), "Connection failed: " + error, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -273,11 +315,17 @@ public class LocationFragment extends Fragment implements MqttManager.MqttCallba
             tvLongitude.setText(getString(R.string.loc_lon_format, lon));
             tvLongitude.setVisibility(View.VISIBLE);
 
-            boolean valid = "gnss".equals(data.getType()) ? gnss.isValidGnssFix() : true;
-            String fixSymbol = valid ? getString(R.string.fix_check) : getString(R.string.fix_cross);
-            tvSatFix.setText(getString(R.string.loc_sat_fix_format, gnss.getSat(), fixSymbol));
-            tvSatFix.setTextColor(ContextCompat.getColor(requireContext(),
-                    valid ? R.color.status_connected : R.color.status_connecting));
+            if ("gnss".equals(data.getType())) {
+                boolean valid = gnss.isValidGnssFix();
+                String fixSymbol = valid ? getString(R.string.fix_check) : getString(R.string.fix_cross);
+                tvSatFix.setText(getString(R.string.loc_gnss_format, gnss.getSat(), fixSymbol));
+                tvSatFix.setTextColor(ContextCompat.getColor(requireContext(),
+                        valid ? R.color.status_connected : R.color.status_connecting));
+            } else {
+                tvSatFix.setText(getString(R.string.loc_type_cell));
+                tvSatFix.setTextColor(ContextCompat.getColor(requireContext(),
+                        R.color.ios_secondary_label));
+            }
             tvSatFix.setVisibility(View.VISIBLE);
 
             if (lat != 0 || lon != 0) {

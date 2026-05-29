@@ -3,13 +3,14 @@
 
     <!-- 底部 Tab -->
     <string name="tab_location">定位</string>
-    <string name="tab_ble_image">蓝牙图片</string>
-    <string name="tab_ble_raw">原图传输</string>
+    <string name="tab_ble_image">图像</string>
+
+    <!-- 图像子 Tab -->
+    <string name="image_subtab_pet">宠物</string>
+    <string name="image_subtab_contact">寻找宠物</string>
 
     <!-- 导航栏标题 -->
     <string name="title_location">定位监控</string>
-    <string name="title_ble_image">蓝牙图片（已裁剪）</string>
-    <string name="title_ble_raw">蓝牙原图</string>
 
     <!-- ===== 定位页 ===== -->
     <string name="connection_status_disconnected">未连接</string>
@@ -17,7 +18,7 @@
     <string name="connection_status_connecting">连接中…</string>
     <string name="btn_connect">连接</string>
     <string name="btn_disconnect">断开</string>
-    <string name="btn_screen_on">点亮屏幕</string>
+    <string name="btn_screen_on">屏幕常亮</string>
     <string name="btn_screen_off">熄灭屏幕</string>
     <string name="last_message_label">最近消息：</string>
     <string name="last_message_none">（无）</string>
@@ -42,7 +43,8 @@
     <string name="ble_btn_disconnect">断开</string>
     <string name="ble_btn_pick">选择图片</string>
     <string name="ble_btn_send">发送</string>
-    <string name="ble_btn_send_raw">发送原图</string>
+    <string name="ble_btn_crop_send">裁剪发送</string>
+    <string name="ble_btn_send_raw">原图发送</string>
     <string name="ble_image_no_selection">未选择图片</string>
     <string name="ble_image_ready">466×466 JPEG（可发送）</string>
     <string name="ble_raw_size_format">原文件：%1$d 字节</string>

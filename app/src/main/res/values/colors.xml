@@ -11,7 +11,8 @@
 
     <!-- iOS-aligned status colors -->
     <color name="status_connected">#FF34C759</color>      <!-- iOS systemGreen -->
-    <color name="status_disconnected">#FFFF3B30</color>   <!-- iOS systemRed -->
+    <color name="status_disconnected">#FFFF3B30</color>   <!-- iOS systemRed (error/failure only) -->
+    <color name="status_idle">#FF8E8E93</color>           <!-- iOS systemGray (idle / not connected) -->
     <color name="status_connecting">#FFFF9500</color>     <!-- iOS systemOrange -->
     <color name="status_transferring">#FF007AFF</color>   <!-- iOS systemBlue -->
 
