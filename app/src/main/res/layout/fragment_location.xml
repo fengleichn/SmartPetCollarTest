@@ -38,7 +38,7 @@
     </FrameLayout>
 
     <!-- Map: 3 parts (~60 %) -->
-    <com.amap.api.maps.MapView
+    <org.osmdroid.views.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="0dp"

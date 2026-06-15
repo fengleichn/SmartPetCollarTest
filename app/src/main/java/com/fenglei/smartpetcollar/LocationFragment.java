@@ -15,24 +15,22 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.amap.api.maps.AMap;
-import com.amap.api.maps.CameraUpdateFactory;
-import com.amap.api.maps.CoordinateConverter;
-import com.amap.api.maps.MapView;
-import com.amap.api.maps.model.BitmapDescriptorFactory;
-import com.amap.api.maps.model.LatLng;
-import com.amap.api.maps.model.Marker;
-import com.amap.api.maps.model.MarkerOptions;
 import com.google.android.material.button.MaterialButton;
+
+import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
 
 /**
  * LocationFragment - mirrors iOS LocationView.
  *
- * Layout: nav bar -> AMap MapView (top fill) -> bottom info panel with
+ * Layout: nav bar -> OSMDroid MapView (top fill) -> bottom info panel with
  * status row, location row, last message row, button row (Connect / Screen On / Screen Off).
  *
- * The pet collar reports WGS-84 GPS coordinates over MQTT; AMap uses GCJ-02 ("火星坐标"),
- * so each incoming point is converted via AMap's CoordinateConverter before being drawn.
+ * The pet collar reports WGS-84 GPS coordinates over MQTT; OSMDroid also uses WGS-84,
+ * so no coordinate conversion is needed.
  */
 public class LocationFragment extends Fragment implements MqttManager.MqttCallback {
 
@@ -48,7 +46,6 @@ public class LocationFragment extends Fragment implements MqttManager.MqttCallba
     private ImageButton btnSettings;
 
     private MapView mapView;
-    private AMap aMap;
     private Marker petMarker;
     private boolean firstFix = true;
 
@@ -56,12 +53,11 @@ public class LocationFragment extends Fragment implements MqttManager.MqttCallba
     private DevicePreferences devicePreferences;
     private boolean isConnected = false;
 
-    // Tracks which screen command was last sent (null = none sent yet)
     private enum ScreenState { NONE, ON, OFF }
     private ScreenState screenState = ScreenState.NONE;
 
     private static final int DEFAULT_INTERVAL_SEC = 10;
-    private static final float MARKER_ZOOM = 16f;
+    private static final double MARKER_ZOOM = 16.0;
 
     @Nullable
     @Override
@@ -85,11 +81,13 @@ public class LocationFragment extends Fragment implements MqttManager.MqttCallba
         btnScreenOff = view.findViewById(R.id.btnScreenOff);
         btnSettings = view.findViewById(R.id.btnSettings);
 
+        Configuration.getInstance().setUserAgentValue(requireContext().getPackageName());
+
         mapView = view.findViewById(R.id.mapView);
-        mapView.onCreate(savedInstanceState);
-        aMap = mapView.getMap();
-        aMap.getUiSettings().setZoomControlsEnabled(false);
-        aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(39.9042, 116.4074), 10f));
+        mapView.setTileSource(TileSourceFactory.MAPNIK);
+        mapView.setMultiTouchControls(true);
+        mapView.getController().setZoom(10.0);
+        mapView.getController().setCenter(new GeoPoint(39.9042, 116.4074));
 
         mqttManager = new MqttManager();
         devicePreferences = DevicePreferences.getInstance(requireContext());
@@ -123,11 +121,6 @@ public class LocationFragment extends Fragment implements MqttManager.MqttCallba
                 R.color.status_idle, false);
     }
 
-    /**
-     * Pops a single-choice dialog over MqttManager.PRESET_DEVICE_MACS and, on selection,
-     * delegates to switchDeviceAndReconnect — which transparently disconnects, reconnects,
-     * and re-subscribes under the new device's topic if a session is active.
-     */
     private void showDeviceSwitcherDialog() {
         if (!isAdded()) return;
         String[] macs = MqttManager.PRESET_DEVICE_MACS;
@@ -151,9 +144,8 @@ public class LocationFragment extends Fragment implements MqttManager.MqttCallba
                         Toast.makeText(requireContext(),
                                 getString(R.string.device_switch_toast_format, selected),
                                 Toast.LENGTH_SHORT).show();
-                        // Reset map state so the new device's first fix re-centers the camera.
                         if (petMarker != null) {
-                            petMarker.remove();
+                            mapView.getOverlays().remove(petMarker);
                             petMarker = null;
                         }
                         firstFix = true;
@@ -164,7 +156,7 @@ public class LocationFragment extends Fragment implements MqttManager.MqttCallba
                 .show();
     }
 
-    // ===== MapView lifecycle wiring (required by AMap SDK) =====
+    // ===== MapView lifecycle =====
 
     @Override
     public void onResume() {
@@ -179,15 +171,9 @@ public class LocationFragment extends Fragment implements MqttManager.MqttCallba
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (mapView != null) mapView.onSaveInstanceState(outState);
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (mapView != null) mapView.onDestroy();
+        if (mapView != null) mapView.onDetach();
         if (mqttManager != null) mqttManager.disconnect();
     }
 
@@ -247,32 +233,26 @@ public class LocationFragment extends Fragment implements MqttManager.MqttCallba
         tvLastMessage.setText(text);
     }
 
-    /**
-     * Converts a WGS-84 point (raw GPS from collar) to GCJ-02 (AMap's expected coord system)
-     * and drops/updates a marker, animating the camera to follow it on the first fix.
-     */
-    private void updateMapMarker(double wgsLat, double wgsLon) {
-        if (aMap == null) return;
-        CoordinateConverter converter = new CoordinateConverter(requireContext());
-        converter.from(CoordinateConverter.CoordType.GPS);
-        converter.coord(new LatLng(wgsLat, wgsLon));
-        LatLng gcj = converter.convert();
+    // Collar reports WGS-84 coordinates; OSMDroid uses WGS-84 natively — no conversion needed.
+    private void updateMapMarker(double lat, double lon) {
+        if (mapView == null) return;
+        GeoPoint point = new GeoPoint(lat, lon);
 
         if (petMarker == null) {
-            petMarker = aMap.addMarker(new MarkerOptions()
-                    .position(gcj)
-                    .title("Pet")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-        } else {
-            petMarker.setPosition(gcj);
+            petMarker = new Marker(mapView);
+            petMarker.setTitle("Pet");
+            petMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+            mapView.getOverlays().add(petMarker);
         }
+        petMarker.setPosition(point);
 
         if (firstFix) {
-            aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(gcj, MARKER_ZOOM));
+            mapView.getController().animateTo(point, MARKER_ZOOM, null);
             firstFix = false;
         } else {
-            aMap.animateCamera(CameraUpdateFactory.newLatLng(gcj));
+            mapView.getController().animateTo(point);
         }
+        mapView.invalidate();
     }
 
     // ===== MqttManager.MqttCallback =====
@@ -298,7 +278,7 @@ public class LocationFragment extends Fragment implements MqttManager.MqttCallba
     public void onConnectionFailed(String error) {
         if (!isAdded()) return;
         updateConnectionUI(getString(R.string.connection_status_disconnected),
-                R.color.status_disconnected, false);  // red dot: active failure
+                R.color.status_disconnected, false);
         appendLastMessage("Connection failed: " + error);
         Toast.makeText(requireContext(), "Connection failed: " + error, Toast.LENGTH_LONG).show();
     }

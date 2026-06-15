@@ -44,10 +44,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.SmartPetCollar.UCrop" />
 
-        <!-- AMap (Gaode) API key -->
-        <meta-data
-            android:name="com.amap.api.v2.apikey"
-            android:value="6d8179e55669548b2633daee926d393a" />
 
     </application>
 </manifest>

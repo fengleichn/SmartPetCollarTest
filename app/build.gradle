@@ -77,8 +77,8 @@ dependencies {
     // UCrop (image cropping)
     implementation 'com.github.yalantis:ucrop:2.2.9'
 
-    // AMap (Gaode) 3D map SDK - mainland-China-friendly map provider
-    implementation 'com.amap.api:3dmap:10.0.600'
+    // OSMDroid - OpenStreetMap based map, no API key or Google Play Services required
+    implementation 'org.osmdroid:osmdroid-android:6.1.18'
 
     // DataStore - persistent key-value storage
     implementation 'androidx.datastore:datastore-preferences:1.0.0'
