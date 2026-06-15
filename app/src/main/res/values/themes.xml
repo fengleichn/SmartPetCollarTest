@@ -69,6 +69,12 @@
         <item name="android:textColor">@color/ios_label</item>
     </style>
 
+    <style name="TextAppearance.SmartPetCollar.Tab" parent="TextAppearance.AppCompat">
+        <item name="android:textAllCaps">false</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
     <style name="TextAppearance.SmartPetCollar.Section" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textSize">13sp</item>
         <item name="android:textColor">@color/ios_secondary_label</item>

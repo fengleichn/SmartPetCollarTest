@@ -56,7 +56,8 @@
         app:tabMode="fixed"
         app:tabGravity="fill"
         app:tabSelectedTextColor="?attr/colorPrimary"
-        app:tabTextColor="@color/ios_secondary_label" />
+        app:tabTextColor="@color/ios_secondary_label"
+        app:tabTextAppearance="@style/TextAppearance.SmartPetCollar.Tab" />
 
     <View
         android:layout_width="match_parent"

@@ -1,66 +1,66 @@
 <resources>
-    <string name="app_name">SmartPetCollar</string>
+    <string name="app_name">Smart Pet Collar</string>
 
-    <!-- Bottom navigation tabs -->
+    <!-- Bottom Tabs -->
     <string name="tab_location">Location</string>
     <string name="tab_ble_image">Image</string>
 
-    <!-- Image sub-tabs (inside the Image tab) -->
+    <!-- Image Sub-tabs -->
     <string name="image_subtab_pet">Pet</string>
     <string name="image_subtab_contact">Find Pet</string>
 
-    <!-- Nav bar titles (mirrors iOS navigationTitle) -->
-    <string name="title_location">Location Monitor</string>
+    <!-- Navigation Bar Title -->
+    <string name="title_location">Location Data</string>
 
-    <!-- ===== Location page (mirrors iOS LocationView) ===== -->
-    <string name="connection_status_disconnected">Disconnected</string>
+    <!-- ===== Location Page ===== -->
+    <string name="connection_status_disconnected">Not connected</string>
     <string name="connection_status_connected">Connected</string>
-    <string name="connection_status_connecting">Connecting...</string>
+    <string name="connection_status_connecting">Connecting…</string>
     <string name="btn_connect">Connect</string>
     <string name="btn_disconnect">Disconnect</string>
-    <string name="btn_screen_on">Screen Always On</string>
-    <string name="btn_screen_off">Screen Off</string>
-    <string name="last_message_label">Last Message:</string>
-    <string name="last_message_none">(none)</string>
-    <string name="no_location_data">No location data yet</string>
-    <string name="loc_lat_format">Lat: %1$.6f</string>
-    <string name="loc_lon_format">Lon: %1$.6f</string>
+    <string name="btn_screen_on">Lost Mode</string>
+    <string name="btn_screen_off">Normal Mode</string>
+    <string name="last_message_label">Recent messages:</string>
+    <string name="last_message_none">(None)</string>
+    <string name="no_location_data">No location data available</string>
+    <string name="loc_lat_format">Latitude: %1$.6f</string>
+    <string name="loc_lon_format">Longitude: %1$.6f</string>
     <string name="loc_sat_fix_format">Satellites: %1$d | Fix: %2$s</string>
-    <string name="loc_gnss_format">GPS定位 | 卫星数: %1$d | %2$s</string>
-    <string name="loc_type_cell">基站定位</string>
+    <string name="loc_gnss_format">GPS location | Satellites: %1$d | %2$s</string>
+    <string name="loc_type_cell">Cell tower location</string>
     <string name="fix_check">✓</string>
     <string name="fix_cross">✗</string>
-    <string name="label_report_interval">Report Interval:</string>
-    <string name="label_seconds">s</string>
+    <string name="label_report_interval">Report interval:</string>
+    <string name="label_seconds">seconds</string>
     <string name="toast_invalid_interval">Invalid interval value</string>
 
-    <!-- ===== BLE Image page (mirrors iOS BLEImageView) ===== -->
-    <string name="ble_idle">BLE Idle</string>
-    <string name="ble_scanning">Scanning...</string>
-    <string name="ble_connecting">Connecting...</string>
+    <!-- ===== Bluetooth Image Page ===== -->
+    <string name="ble_idle">Bluetooth idle</string>
+    <string name="ble_scanning">Scanning…</string>
+    <string name="ble_connecting">Connecting…</string>
     <string name="ble_connected">Connected</string>
-    <string name="ble_transferring">Transferring...</string>
+    <string name="ble_transferring">Transferring…</string>
     <string name="ble_disconnected">Disconnected</string>
     <string name="ble_btn_scan">Scan</string>
     <string name="ble_btn_disconnect">Disconnect</string>
-    <string name="ble_btn_pick">Pick Image</string>
+    <string name="ble_btn_pick">Select image</string>
     <string name="ble_btn_send">Send</string>
-    <string name="ble_btn_crop_send">Crop &amp; Send</string>
-    <string name="ble_btn_send_raw">Send Raw</string>
+    <string name="ble_btn_crop_send">Crop and send</string>
+    <string name="ble_btn_send_raw">Send raw image</string>
     <string name="ble_image_no_selection">No image selected</string>
-    <string name="ble_image_ready">466×466 JPEG (ready to send)</string>
+    <string name="ble_image_ready">466×466 JPEG ready to send</string>
     <string name="ble_raw_size_format">Raw file: %1$d bytes</string>
-    <string name="ble_image_preview">Image Preview</string>
+    <string name="ble_image_preview">Image preview</string>
     <string name="status_placeholder">--</string>
 
-    <!-- Logs (kept for backwards compatibility) -->
-    <string name="btn_clear_log">Clear Log</string>
-    <string name="hint_no_data">No data received yet...</string>
+    <!-- Logs -->
+    <string name="btn_clear_log">Clear log</string>
+    <string name="hint_no_data">No data received yet…</string>
     <string name="ble_log_empty">No BLE activity yet...</string>
 
-    <!-- Device list dialog -->
-    <string name="device_list_title">Select Device</string>
-    <string name="device_list_scanning">Scanning for devices with prefix \"8G\"...</string>
+    <!-- Device List Dialog -->
+    <string name="device_list_title">Select device</string>
+    <string name="device_list_scanning">Scanning for devices with the \"8G\" prefix…</string>
     <string name="device_list_cancel">Cancel</string>
 
     <!-- Location-page device switcher (gear icon in nav bar) -->
