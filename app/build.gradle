@@ -48,6 +48,13 @@ android {
             excludes += ['META-INF/INDEX.LIST', 'META-INF/io.netty.versions.properties']
         }
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def date = new java.text.SimpleDateFormat("yyyyMMdd").format(new java.util.Date())
+            outputFileName = "SmartPetCollar_${defaultConfig.versionName}_${date}_${variant.buildType.name}.apk"
+        }
+    }
 }
 
 dependencies {
